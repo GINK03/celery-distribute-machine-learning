@@ -1,6 +1,7 @@
 import tasks
 import numpy as np
 import sys
+import random
 
 if '--leveldb_write' in sys.argv:
   for i in range(10000000):
@@ -23,6 +24,13 @@ if '--rocksdb_write' in sys.argv:
       res = tasks.flashRocks.delay(key,val)
 
 
+if '--add' in sys.argv:
+  for hostname in ['192.168.15.80', '192.168.15.81', '192.168.15.43', '192.168.15.44', '192.168.15.45', '192.168.15.46', '192.168.15.48']:
+    tasks.write_client_memory_talbe(hostname)
+    a, b = random.randint(0, 100), random.randint(0, 100)
+    c = tasks.add.delay(a, b).get()
+
+    print('{} {} + {} = {}'.format(hostname, a, b, c))
 if '--rocksdb_get' in sys.argv:
   res = tasks.getKeysRocks.delay().get()
   print( res )
