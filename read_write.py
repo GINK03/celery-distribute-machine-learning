@@ -1,4 +1,4 @@
-from tasks import *
+import tasks
 import numpy as np
 import sys
 
@@ -8,7 +8,7 @@ if '--leveldb_write' in sys.argv:
       print('now iter {}'.format(i))
     key = np.random.bytes(1000)
     val = np.random.bytes(1000)
-    flashLevel.delay(key,val).get()
+    tasks.flashLevel.delay(key,val).get()
 
 if '--rocksdb_write' in sys.argv:
   for i in range(1000):
@@ -18,10 +18,10 @@ if '--rocksdb_write' in sys.argv:
     val = np.random.bytes(1000)
     # delayは同期？
     #res = flashRocks.delay(key,val).get()
-    res = flashRocks.delay(key,val)
+    res = tasks.flashRocks.delay(key,val)
 
     #print( res )
 
 if '--rocksdb_get' in sys.argv:
-  res = getKeysRocks()
+  res = tasks.getKeysRocks.delay().get()
   print( res )
