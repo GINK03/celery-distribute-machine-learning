@@ -68,7 +68,7 @@ def mapper(hostname):
     return (etimator, best_param, best_score)
 
   vtable = VTable( add, flashMemory, flashLevel, flashRocks, getKeysRocks, gridSearch )
-  return ( app, vtable )
+  return ( apsp, vtable )
 
 
 import socket
