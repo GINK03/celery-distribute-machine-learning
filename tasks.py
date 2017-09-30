@@ -55,7 +55,7 @@ def getKeysRocks():
 if __name__ == 'tasks':
   import socket
   ipaddr = socket.gethostbyname(socket.gethostname())
-  if ipaddr in ['192.168.15.37']:
+  if ipaddr in ['192.168.15.37', '192.168.15.11']:
     ldb = plyvel.DB('{pid}.map.ldb'.format(pid=pid), create_if_missing=True)
     rdb = rocksdb.DB("{pid}.map.rdb".format(pid=pid), rocksdb.Options(create_if_missing=True))
   
