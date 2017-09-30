@@ -8,6 +8,8 @@ import msgpack
 task_serializer = 'msgpack'
 result_serializer = 'msgpack'
 
+hotname_app = {}
+hostnames = ['192.168.15.37']
 app = Celery('tasks', task_serializer = 'msgpack', result_serializer = 'msgpack', backend='amqp', broker='amqp://remote:remote@192.168.15.37/' )
 app.conf.update( task_serializer = 'pickle', result_serializer = 'pickle', event_serializer = 'pickle', accept_content = ['pickle', 'json'] )
 pid = os.getpid()
