@@ -61,6 +61,7 @@ def mapper(hostname):
   
   @app.task
   def gridSearch(X, y, clf):
+    print('start to fit!')
     clf.fit(X, y)
     estimator = clf.best_estimator_ 
     best_param = clf.best_params_
