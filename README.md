@@ -13,6 +13,16 @@ $ sudo pacman -S rabbitmq
 $ sudo rabbitmq-server &
 ```
 
+## rabbitmqへremoteからアクセスできるユーザを追加
+remoteという名のユーザを追加
+```cosnole
+$ sudo rabbitmqctl add_user remote remote
+```
+任意のIPからアクセスできるように、設定
+```console
+$ sudo rabbitmqctl set_permissions -p / remote ".*" ".*" ".*"
+```
+
 ## redisのインストール
 (このサイト)[https://redis.io/download]から、最新版のソースコードをダウンロードする  
 #### Ubuntu Linux

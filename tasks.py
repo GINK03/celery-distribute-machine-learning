@@ -5,7 +5,7 @@ import rocksdb
 import os
 from datetime import datetime
 import msgpack
-app = Celery('tasks', backend='amqp', broker='amqp://guest@localhost//')
+app = Celery('tasks', backend='amqp', broker='amqp://remote:remote@192.168.15.37/' )
 
 pid = os.getpid()
 ldb = plyvel.DB('{pid}.map.ldb'.format(pid=pid), create_if_missing=True)
