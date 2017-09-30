@@ -1,11 +1,16 @@
 from celery import Celery
-import redis
-import plyvel
-import rocksdb
 import os
 from datetime import datetime
 import msgpack
-
+try:
+  import plyvel
+  import rocksdb
+except:
+  ...
+try:
+  import redis
+except:
+  ...
 def mapper(hostname):
   app = Celery('tasks', task_serializer = 'msgpack', result_serializer = 'msgpack', backend='amqp', broker='amqp://remote:remote@{hostname}/'.format(hostname=hostname) )
   app.conf.update( task_serializer = 'pickle', result_serializer = 'pickle', event_serializer = 'pickle', accept_content = ['pickle', 'json'] )
@@ -15,9 +20,9 @@ def mapper(hostname):
     print('Add', x+y)
     return x + y
 
-  r = redis.StrictRedis(host='localhost', port=6379, db=0)
   @app.task
   def flashMemory(k, v):
+    r = redis.StrictRedis(host='localhost', port=6379, db=0)
     r.set(k, v)
 
   @app.task
@@ -62,8 +67,11 @@ def write_client_memory_talbe(hostname):
 if __name__ == 'tasks':
   if hostname in ['192.168.15.37', '192.168.15.24']:
     pid = os.getpid()
-    ldb = plyvel.DB('{pid}.map.ldb'.format(pid=pid), create_if_missing=True)
-    rdb = rocksdb.DB("{pid}.map.rdb".format(pid=pid), rocksdb.Options(create_if_missing=True))
+    try:
+      ldb = plyvel.DB('{pid}.map.ldb'.format(pid=pid), create_if_missing=True)
+      rdb = rocksdb.DB("{pid}.map.rdb".format(pid=pid), rocksdb.Options(create_if_missing=True))
+    except:
+      ...
   
 if __name__ == '__main__':
   app.start()
