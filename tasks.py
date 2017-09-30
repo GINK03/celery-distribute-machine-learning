@@ -11,6 +11,15 @@ try:
   import redis
 except:
   ...
+
+class VTable(object):
+  def __init__(self, add, flashMemory, flashLevel, flashRocks, getKeysRocks):
+    self.add = add
+    self.flashMemory = flashMemory
+    self.flashLevel = flashLevel
+    self.flashRocks = flashRocks
+    self.getKeysRocks = getKeysRocks
+
 def mapper(hostname):
   app = Celery('tasks', task_serializer = 'msgpack', result_serializer = 'msgpack', backend='amqp', broker='amqp://remote:remote@{hostname}/'.format(hostname=hostname) )
   app.conf.update( task_serializer = 'pickle', result_serializer = 'pickle', event_serializer = 'pickle', accept_content = ['pickle', 'json'] )
@@ -42,7 +51,8 @@ def mapper(hostname):
     it.seek_to_first()
     return list(it)
 
-  return app, [add, flashMemory, flashLevel, flashRocks, getKeysRocks] 
+  vtable = VTable( add, flashMemory, flashLevel, flashRocks, getKeysRocks )
+  return ( app, vtable )
 
 
 import socket
@@ -50,22 +60,23 @@ hostname = socket.gethostbyname(socket.gethostname())
 if hostname == '127.0.0.1' or hostname == '127.0.1.1':
   hostname = socket.getfqdn()
 print('using hostname is', hostname)
-app, (add, flashMemory, flashLevel, flashRocks, getKeysRocks) = mapper(hostname)
-add = add
-flashMemory = flashMemory
-flashRocks = flashRocks
-getKeysRocks = getKeysRocks
+app, vtable = mapper(hostname)
+add = vtable.add
+flashMemory = vtable.flashMemory
+flashRocks = vtable.flashRocks
+getKeysRocks = vtable.getKeysRocks
 def write_client_memory_talbe(hostname):
   global add
   global flashMemory
   global flashLevel
   global flashRocks
   global getKeysRocks
-  app, (add, flashMemory, flashLevel, flashRocks, getKeysRocks) = mapper(hostname)
-  add = add
-  flashMemory = flashMemory
-  flashRocks = flashRocks
-  getKeysRocks = getKeysRocks
+  app, vtable = mapper(hostname)
+  add = vtable.add
+  flashMemory = vtable.flashMemory
+  flashLevel = vtable.flashLevel
+  flashRocks = vtable.flashRocks
+  getKeysRocks = vtable.getKeysRocks
 
 if __name__ == 'tasks':
   if hostname in ['192.168.15.37', '192.168.15.24']:
