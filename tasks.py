@@ -1,3 +1,10 @@
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import make_classification
+from sklearn import grid_search
+import pickle
+import sys
+import numpy as np
+import json
 from celery import Celery
 import os
 from datetime import datetime
@@ -50,6 +57,14 @@ def mapper(hostname):
     it = rdb.iterkeys()
     it.seek_to_first()
     return list(it)
+  
+  @app.task
+  def gridSearch(X, y, clf):
+    clf.fit(X, y)
+    estimator = clf.best_estimator_ 
+    best_param = clf.best_params_
+    best_score = clf.best_score_ 
+    return (etimator, best_param, best_score)
 
   vtable = VTable( add, flashMemory, flashLevel, flashRocks, getKeysRocks )
   return ( app, vtable )
