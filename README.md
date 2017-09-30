@@ -32,8 +32,55 @@ Celeryという分散タスクキューを利用することで、効率的に�
 RandomForestの出力結果の平均をとり、巨大なモデルであってもコンピュータ一台がそのリソースの範囲で扱えるモデルを超える巨大なモデルとして振る舞うことを示します  
 <div align="center"> 図3. アンサンブル </div>
 
+## Celeryの設定とコーディング
+ごちゃごちゃとCeleryを触っていたのですけど、Pythonのコードの限界というか、デコレータと呼ばれるceleryの関数の引数になっているユーザ定義関数の制御が厄介で、モンキーパッチなどの、あまり好ましくない方法で制御する必要がありました  
+clientとserverに機能を分けて、グリッドサーチではこのように定義しました  
+### グリッドサーチ
+#### Client
+- データセットを整形してServerに送信
+- 様々なパラメータを代入したモデルを構築し、学習と評価はせずにこの状態をpickleでシリアライズしてserverに送信
+- Serverで評価した探索範囲内でのベストパフォーマンスを回収
+- 各Serverの情報を統合して、最も良いパフォーマンスの結果を出力
 
-
+```python
+  task_que = []
+  for hostname, params in hostname_params.items():
+    parameters = {
+      #'n_estimators'      : [5, 10, 20, 30, 50, 100, 300],
+      'max_features'      : params,
+      'min_samples_split' : [3, 5, 10, 15, 20, 25, 30, 40, 50, 100],
+      'min_samples_leaf'  : [1, 2, 3, 5, 10, 15, 20],
+      'max_depth' : [10, 20, 25, 30]
+    }
+    from sklearn.ensemble import RandomForestClassifier                                               
+    from sklearn.datasets import make_classification 
+    from sklearn import grid_search 
+    clf = grid_search.GridSearchCV(RandomForestClassifier(), parameters, n_jobs=4)
+    import tasks
+    tasks.write_client_memory_talbe(hostname) # ここでモンキーパッチを行なっている
+    task = tasks.gridSearch.delay(X, y, clf)
+    print( 'send task to', hostname )
+    task_que.append( (hostname, clf, task) )
+  for hostname, clf, task in task_que:
+    estimator, best_param, best_score = task.get()
+    print('{} best_score={}, best_param={} '.format(hostname, best_score, best_param))
+    print( estimator )
+```
+#### Server
+- clientからデータを受け取る  
+- 受け取ったデータの中のpickleからモデルを復元して学習  
+- 探索範囲のパラメータの中から発見した最良の結果を返却する  
+```python3
+  @app.task
+  def gridSearch(X, y, clf): # dataとモデルを受け取って
+    print('start to fit!')
+    clf.fit(X, y) # 学習
+    estimator = clf.best_estimator_ 
+    best_param = clf.best_params_
+    best_score = clf.best_score_ 
+    return (etimator, best_param, best_score) # 最良のものを返却
+```
+モンキーパッチなどの実装は、コードに詳細が記述されています
 
 # Install(長いので別途見てね)
 
@@ -122,5 +169,3 @@ $ celery -A tasks worker --loglevel=info --concurrency=1
 $ celery -A tasks worker --loglevel=info --concurrency=16
 ```
 　
-
-
