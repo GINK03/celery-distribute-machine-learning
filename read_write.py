@@ -8,16 +8,19 @@ if '--leveldb_write' in sys.argv:
       print('now iter {}'.format(i))
     key = np.random.bytes(1000)
     val = np.random.bytes(1000)
-    flashLevel(key,val)
+    flashLevel.delay(key,val).get()
 
 if '--rocksdb_write' in sys.argv:
-  for i in range(10000):
-    if i%1000 == 0:
+  for i in range(1000):
+    if i%100 == 0:
       print('now iter {}'.format(i))
     key = np.random.bytes(1000)
     val = np.random.bytes(1000)
-    res = flashRocks(key,val)
-    print( res )
+    # delayは同期？
+    #res = flashRocks.delay(key,val).get()
+    res = flashRocks.delay(key,val)
+
+    #print( res )
 
 if '--rocksdb_get' in sys.argv:
   res = getKeysRocks()

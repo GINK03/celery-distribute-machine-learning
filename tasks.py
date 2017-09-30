@@ -5,11 +5,12 @@ import rocksdb
 import os
 from datetime import datetime
 import msgpack
-app = Celery('tasks', backend='amqp', broker='amqp://remote:remote@192.168.15.37/' )
+task_serializer = 'msgpack'
+result_serializer = 'msgpack'
 
+app = Celery('tasks', task_serializer = 'msgpack', result_serializer = 'msgpack', backend='amqp', broker='amqp://remote:remote@192.168.15.37/' )
+app.conf.update( task_serializer = 'pickle', result_serializer = 'pickle', event_serializer = 'pickle', accept_content = ['pickle', 'json'] )
 pid = os.getpid()
-ldb = plyvel.DB('{pid}.map.ldb'.format(pid=pid), create_if_missing=True)
-rdb = rocksdb.DB("{pid}.map.rdb".format(pid=pid), rocksdb.Options(create_if_missing=True))
 
 que = []
 @app.task
@@ -24,7 +25,8 @@ def deque():
 
 @app.task
 def add(x, y):
-    return x + y
+  print('Add', x+y)
+  return x + y
 
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
 @app.task
@@ -48,5 +50,10 @@ def getKeysRocks():
   it.seek_to_first()
   return list(it)
 
-
+if __name__ == 'tasks':
+  ldb = plyvel.DB('{pid}.map.ldb'.format(pid=pid), create_if_missing=True)
+  rdb = rocksdb.DB("{pid}.map.rdb".format(pid=pid), rocksdb.Options(create_if_missing=True))
+  
+if __name__ == '__main__':
+  app.start()
 
