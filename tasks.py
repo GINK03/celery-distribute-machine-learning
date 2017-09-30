@@ -20,12 +20,13 @@ except:
   ...
 
 class VTable(object):
-  def __init__(self, add, flashMemory, flashLevel, flashRocks, getKeysRocks):
+  def __init__(self, add, flashMemory, flashLevel, flashRocks, getKeysRocks, gridSearch):
     self.add = add
     self.flashMemory = flashMemory
     self.flashLevel = flashLevel
     self.flashRocks = flashRocks
     self.getKeysRocks = getKeysRocks
+    self.gridSearch = gridSearch
 
 def mapper(hostname):
   app = Celery('tasks', task_serializer = 'msgpack', result_serializer = 'msgpack', backend='amqp', broker='amqp://remote:remote@{hostname}/'.format(hostname=hostname) )
@@ -66,7 +67,7 @@ def mapper(hostname):
     best_score = clf.best_score_ 
     return (etimator, best_param, best_score)
 
-  vtable = VTable( add, flashMemory, flashLevel, flashRocks, getKeysRocks )
+  vtable = VTable( add, flashMemory, flashLevel, flashRocks, getKeysRocks, gridSearch )
   return ( app, vtable )
 
 
@@ -80,18 +81,21 @@ add = vtable.add
 flashMemory = vtable.flashMemory
 flashRocks = vtable.flashRocks
 getKeysRocks = vtable.getKeysRocks
+gridSearch = vtable.gridSearch
 def write_client_memory_talbe(hostname):
   global add
   global flashMemory
   global flashLevel
   global flashRocks
   global getKeysRocks
+  global gridSearch
   app, vtable = mapper(hostname)
   add = vtable.add
   flashMemory = vtable.flashMemory
   flashLevel = vtable.flashLevel
   flashRocks = vtable.flashRocks
   getKeysRocks = vtable.getKeysRocks
+  gridSearch = vtable.gridSearch
 
 if __name__ == 'tasks':
   if hostname in ['192.168.15.37', '192.168.15.24']:
