@@ -7,7 +7,7 @@ from datetime import datetime
 import msgpack
 
 def mapper(hostname):
-  app = Celery('tasks', task_serializer = 'msgpack', result_serializer = 'msgpack', backend='amqp', broker='amqp://remote:remote@192.168.15.37/' )
+  app = Celery('tasks', task_serializer = 'msgpack', result_serializer = 'msgpack', backend='amqp', broker='amqp://remote:remote@{hostname}/'.format(hostname=hostname) )
   app.conf.update( task_serializer = 'pickle', result_serializer = 'pickle', event_serializer = 'pickle', accept_content = ['pickle', 'json'] )
 
   @app.task
@@ -39,6 +39,7 @@ def mapper(hostname):
 
   return app, [add, flashMemory, flashLevel, flashRocks, getKeysRocks] 
 
+
 import socket
 hostname = socket.gethostbyname(socket.gethostname())
 app, (add, flashMemory, flashLevel, flashRocks, getKeysRocks) = mapper(hostname)
@@ -46,7 +47,6 @@ add = add
 flashMemory = flashMemory
 flashRocks = flashRocks
 getKeysRocks = getKeysRocks
-
 def write_client_memory_talbe(hostname):
   global add
   global flashMemory
@@ -60,7 +60,7 @@ def write_client_memory_talbe(hostname):
   getKeysRocks = getKeysRocks
 
 if __name__ == 'tasks':
-  if hostname in ['192.168.15.37', '192.168.15.11']:
+  if hostname in ['192.168.15.37', '192.168.15.24']:
     pid = os.getpid()
     ldb = plyvel.DB('{pid}.map.ldb'.format(pid=pid), create_if_missing=True)
     rdb = rocksdb.DB("{pid}.map.rdb".format(pid=pid), rocksdb.Options(create_if_missing=True))

@@ -11,16 +11,17 @@ if '--leveldb_write' in sys.argv:
     tasks.flashLevel.delay(key,val).get()
 
 if '--rocksdb_write' in sys.argv:
-  for i in range(1000):
-    if i%100 == 0:
-      print('now iter {}'.format(i))
-    key = np.random.bytes(1000)
-    val = np.random.bytes(1000)
-    # delayは同期？
-    #res = flashRocks.delay(key,val).get()
-    res = tasks.flashRocks.delay(key,val)
+  for hostname in ['192.168.15.3', '192.168.15.37']:
+    tasks.write_client_memory_talbe(hostname)
+    for i in range(1000):
+      if i%100 == 0:
+        print('now iter {}'.format(i))
+      key = np.random.bytes(1000)
+      val = np.random.bytes(1000)
+      # delayは同期？
+      #res = flashRocks.delay(key,val).get()
+      res = tasks.flashRocks.delay(key,val)
 
-    #print( res )
 
 if '--rocksdb_get' in sys.argv:
   res = tasks.getKeysRocks.delay().get()
