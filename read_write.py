@@ -59,6 +59,7 @@ if '--random_forest' in sys.argv:
     import tasks
     tasks.write_client_memory_talbe(hostname)
     task = tasks.gridSearch.delay(X, y, clf)
+    print( 'send task to', hostname )
     task_que.append( (hostname, clf, task) )
   for hostname, clf, task in task_que:
     estimator, best_param, best_score = task.get()
