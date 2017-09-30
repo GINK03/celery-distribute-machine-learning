@@ -47,6 +47,9 @@ def mapper(hostname):
 
 import socket
 hostname = socket.gethostbyname(socket.gethostname())
+if hostname == '127.0.0.1' or hostname == '127.0.1.1':
+  hostname = socket.getfqdn()
+print('using hostname is', hostname)
 app, (add, flashMemory, flashLevel, flashRocks, getKeysRocks) = mapper(hostname)
 add = add
 flashMemory = flashMemory
