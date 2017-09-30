@@ -38,14 +38,26 @@ def mapper(hostname):
     return list(it)
 
   return app, [add, flashMemory, flashLevel, flashRocks, getKeysRocks] 
+
 import socket
 hostname = socket.gethostbyname(socket.gethostname())
 app, (add, flashMemory, flashLevel, flashRocks, getKeysRocks) = mapper(hostname)
-
 add = add
 flashMemory = flashMemory
 flashRocks = flashRocks
 getKeysRocks = getKeysRocks
+
+def write_client_memory_talbe(hostname):
+  global add
+  global flashMemory
+  global flashLevel
+  global flashRocks
+  global getKeysRocks
+  app, (add, flashMemory, flashLevel, flashRocks, getKeysRocks) = mapper(hostname)
+  add = add
+  flashMemory = flashMemory
+  flashRocks = flashRocks
+  getKeysRocks = getKeysRocks
 
 if __name__ == 'tasks':
   if hostname in ['192.168.15.37', '192.168.15.11']:
