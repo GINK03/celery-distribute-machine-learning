@@ -119,6 +119,39 @@ RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini', # <-
             warm_start=False) 
  ```
  
+ ## グリッドサーチを1台で行うのと、10分割して行うもののベンチーマクの差
+ 分散処理するサーバを一台に限定して行うと、この程度の時間がかかります　　
+ ```cosnole
+ ```
+ これを5台に分散して処理すると、この程度になります。
+ ```
+ ```
+ 
+ ## Adultデータセットのベンチマーク
+ UCIの詳細情報によると、エラー率に関して、様々なアルゴリズムのベンチマークが知るさており、今回のエラー率はほぼ理想的なパフォーマンスを発揮できたことがわかるかと思います  
+ 
+ ```console
+ |    Algorithm               Error
+| -- ----------------        -----
+| 1  C4.5                    15.54
+| 2  C4.5-auto               14.46
+| 3  C4.5 rules              14.94
+| 4  Voted ID3 (0.6)         15.64
+| 5  Voted ID3 (0.8)         16.47
+| 6  T2                      16.84
+| 7  1R                      19.54
+| 8  NBTree                  14.10
+| 9  CN2                     16.00
+| 10 HOODG                   14.82
+| 11 FSS Naive Bayes         14.05
+| 12 IDTM (Decision table)   14.46
+| 13 Naive-Bayes             16.12
+| 14 Nearest-neighbor (1)    21.42
+| 15 Nearest-neighbor (3)    20.35
+| 16 OC1                     15.04
+ ```
+
+## まとめ
 
 
 # Install(長いので別途見てね)
