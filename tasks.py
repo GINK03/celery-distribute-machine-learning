@@ -66,7 +66,7 @@ def mapper(hostname):
     estimator = clf.best_estimator_ 
     best_param = clf.best_params_
     best_score = clf.best_score_ 
-    return (etimator, best_param, best_score)
+    return (estimator, best_param, best_score)
 
   vtable = VTable( add, flashMemory, flashLevel, flashRocks, getKeysRocks, gridSearch )
   return ( app, vtable )
