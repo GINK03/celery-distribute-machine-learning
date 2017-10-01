@@ -101,10 +101,22 @@ Serverサイドでは、celeryをこのように起動します
 自分のIPアドレスを自動で検出しますが、まれに検出に失敗するときには、ホストネームを自分のサーバのホスト名に設定します  
 ```console
 $ celery -A tasks worker --loglevel=info
+
 ```
 
 サーバサイドのプロセスが全て起動したことを確認したら、Clientからグリッドサーチの命令を送ります  
-
+ ```console
+ $ python3 grid_search.py --random_forest
+ {'max_depth': 30, 'min_samples_split': 30, 'min_samples_leaf': 1, 'max_features': 5} 0.8591873713952274 # <-最適値なパラメータ                                                                                               
+RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini', # <- 最適なパラメータを適応したモデル
+            max_depth=30, max_features=5, max_leaf_nodes=None,                                     
+            min_impurity_decrease=0.0, min_impurity_split=None,                                    
+            min_samples_leaf=1, min_samples_split=30,                                              
+            min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,                               
+            oob_score=False, random_state=None, verbose=0,                                         
+            warm_start=False) 
+ ```
+ 
 ##
 
 
