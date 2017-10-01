@@ -7,7 +7,9 @@ Armと呼ばれるスマートフォンに入っているようなアーキテ�
 [PINE64-LTS(2GB)](https://www.pine64.org/?product=pine-a64-lts)という撰品で64bitのArmアーキテクチャの製品で、一個$35程度です  
 最近、さらに高速で大メモリのものが出ました  
 [ROCK64(4GB)](https://www.pine64.org/?product=rock64-media-board-computer)で、これは$45程度です。ギリギリこれぐらいで遅い計算機として使えるという印象があり、やはりパワーは大事です  
-
+<p align="center">
+  <img width="400px" src="https://user-images.githubusercontent.com/4949982/31052231-f486c5da-a6b8-11e7-8a4a-c3ebba14843b.png">
+</p>
 <div align="center"> 図1. 組んだクラスタの写真 </div>
 
 ## Celeryでできる分散機械学習
