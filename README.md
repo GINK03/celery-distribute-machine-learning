@@ -121,7 +121,7 @@ RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini', # <-
             warm_start=False) 
  ```
  
- ## グリッドサーチを1台で行うのと、10分割して行うもののベンチーマクの差
+ ## グリッドサーチを1台で行うのと、5分割して行うもののベンチーマクの差
  分散処理するサーバを一台に限定して行うと、この程度の時間がかかります　　
  ```cosnole
  elapsed 32714.200119832235 <- 32715秒、つまり、9.1時間
