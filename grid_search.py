@@ -44,7 +44,7 @@ if '--random_forest' in sys.argv:
   y = np.array(y) 
 
   task_que = []
-  for hostname, params in hostname_params.items():
+  for hostname, params in [ ('192.168.15.11',[3, 5]) ] : #hostname_params.items():
     parameters = {
       #'n_estimators'      : [5, 10, 20, 30, 50, 100, 300],
       'max_features'      : params,
@@ -61,9 +61,18 @@ if '--random_forest' in sys.argv:
     task = tasks.gridSearch.delay(X, y, clf)
     print( 'send task to', hostname )
     task_que.append( (hostname, clf, task) )
+
+  kvs = []
   for hostname, clf, task in task_que:
     estimator, best_param, best_score = task.get()
-    print('{} best_score={}, best_param={} '.format(hostname, best_score, best_param))
+    kv = (best_param, best_score, estimator)
+    kvs.append( kv ) 
+    #print('{} best_score={}, best_param={} '.format(hostname, best_score, best_param))
+    #print( estimator )
+  best_param, best_score, estimator = sorted( kvs, key=lambda x:x[1]).pop()
+  print( best_param, best_score )
+  print( estimator )
+
 
 if '--rocksdb_get' in sys.argv:
   res = tasks.getKeysRocks.delay().get()
