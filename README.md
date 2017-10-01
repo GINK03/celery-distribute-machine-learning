@@ -106,7 +106,6 @@ Serverサイドでは、celeryをこのように起動します
 自分のIPアドレスを自動で検出しますが、まれに検出に失敗するときには、ホストネームを自分のサーバのホスト名に設定します  
 ```console
 $ celery -A tasks worker --loglevel=info
-
 ```
 
 サーバサイドのプロセスが全て起動したことを確認したら、Clientからグリッドサーチの命令を送ります  
@@ -125,17 +124,35 @@ RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini', # <-
  ## グリッドサーチを1台で行うのと、10分割して行うもののベンチーマクの差
  分散処理するサーバを一台に限定して行うと、この程度の時間がかかります　　
  ```cosnole
+ elapsed 32714.200119832235 <- 32715秒、つまり、9.1時間
  ```
  これを5台に分散して処理すると、この程度になります。
  ```
+using hostname is 192.168.15.37
+send task to 192.168.15.80
+send task to 192.168.15.81
+send task to 192.168.15.45
+send task to 192.168.15.46
+send task to 192.168.15.48
+{'min_samples_split': 50, 'min_samples_leaf': 2, 'max_depth': 30, 'max_features': 35} 0.8634869936427014
+RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini',
+            max_depth=30, max_features=35, max_leaf_nodes=None,
+            min_impurity_decrease=0.0, min_impurity_split=None,
+            min_samples_leaf=2, min_samples_split=50,
+            min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
+            oob_score=False, random_state=None, verbose=0,
+            warm_start=False)
+elapsed 5459.255481719971 # <- 5460秒、つまり、1.5時間
  ```
+ 複数回サンプルして平均を取ると正確な値になるかと思いますが、一回の施行での例です  
  
- ## Adultデータセットのベンチマーク
- UCIの詳細情報によると、エラー率に関して、様々なアルゴリズムのベンチマークが知るさており、今回のエラー率はほぼ理想的なパフォーマンスを発揮できたことがわかるかと思います  
+## Adultデータセットのベンチマーク
+データセット提供元の、UCIの詳細情報によると、エラー率に関して、様々なアルゴリズムのベンチマークが知るさており、今回のエラー率はほぼ理想的なパフォーマンスを発揮できたことがわかるかと思います  
 
 今回GridSearchしたベンチマーク
 ```Console
-
+ACCUR 86.34869936427014
+ERROR 13.6513006357299
 ```
 
 UCIによるベンチマーク
@@ -159,6 +176,8 @@ UCIによるベンチマーク
 | 15 Nearest-neighbor (3)    20.35
 | 16 OC1                     15.04
  ```
+ 
+ベンチマーク時点が古いのもありますが、かなり余裕ですね。Armの安いマシンでの機械学習でもベンチマークを超えることはできました。
 
 ## Appendix. Install Celery and Denpendencies
 これが結構ややこしく、rabbitmqなどのセットアップとか結構調べました  
